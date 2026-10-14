@@ -620,7 +620,7 @@ def open_cache_file(sources, extension, mode):
         raise
 
 
-def read_file(input, dict={}):
+def read_file(input, symbols={}):
     try:
         script = input.read()
     except UnicodeDecodeError as ex:
@@ -629,7 +629,6 @@ def read_file(input, dict={}):
     script = script.lstrip(str(codecs.BOM_UTF8, "utf-8"))
 
     def repl(m):
-        id = m.group(1)
-        return dict[id] if id in dict else ""
+        return symbols.get(*m.groups(""))
 
-    return re.sub("{([a-zA-Z_][a-zA-Z0-9_]*)}", repl, script)
+    return re.sub("{([a-zA-Z_][a-zA-Z0-9_]+):?([^}]+)?}", repl, script)
